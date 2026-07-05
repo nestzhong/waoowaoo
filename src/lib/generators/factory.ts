@@ -28,6 +28,9 @@ import {
     SiliconFlowAudioGenerator,
     SiliconFlowImageGenerator,
     SiliconFlowVideoGenerator,
+    WasuTokenplanAudioGenerator,
+    WasuTokenplanImageGenerator,
+    WasuTokenplanVideoGenerator,
 } from './official'
 
 /**
@@ -67,6 +70,8 @@ export function createImageGenerator(provider: string, modelId?: string): ImageG
             return new BailianImageGenerator()
         case 'siliconflow':
             return new SiliconFlowImageGenerator()
+        case 'wasu-tokenplan':
+            return new WasuTokenplanImageGenerator()
         default:
             throw new Error(`Unknown image generator provider: ${provider}`)
     }
@@ -96,6 +101,8 @@ export function createVideoGenerator(provider: string): VideoGenerator {
             return new BailianVideoGenerator()
         case 'siliconflow':
             return new SiliconFlowVideoGenerator()
+        case 'wasu-tokenplan':
+            return new WasuTokenplanVideoGenerator()
         default:
             throw new Error(`Unknown video generator provider: ${provider}`)
     }
@@ -111,6 +118,8 @@ export function createAudioGenerator(provider: string): AudioGenerator {
             return new BailianAudioGenerator()
         case 'siliconflow':
             return new SiliconFlowAudioGenerator()
+        case 'wasu-tokenplan':
+            return new WasuTokenplanAudioGenerator()
         default:
             throw new Error(`Unknown audio generator provider: ${provider}`)
     }

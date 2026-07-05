@@ -184,6 +184,25 @@ export const PRESET_MODELS: PresetModel[] = [
     { modelId: 'viduq1', name: 'Vidu Q1', type: 'video', provider: 'vidu' },
     { modelId: 'viduq1-classic', name: 'Vidu Q1 Classic', type: 'video', provider: 'vidu' },
     { modelId: 'vidu2.0', name: 'Vidu 2.0', type: 'video', provider: 'vidu' },
+
+    // 华数 TokenPlan 文本模型
+    { modelId: 'qwen3.6-plus', name: 'Qwen 3.6 Plus', type: 'llm', provider: 'wasu-tokenplan' },
+    { modelId: 'qwen3.6-flash', name: 'Qwen 3.6 Flash', type: 'llm', provider: 'wasu-tokenplan' },
+
+    // 华数 TokenPlan 图片模型
+    { modelId: 'qwen-image-2.0', name: 'Qwen Image 2.0', type: 'image', provider: 'wasu-tokenplan' },
+    { modelId: 'qwen-image-2.0-pro', name: 'Qwen Image 2.0 Pro', type: 'image', provider: 'wasu-tokenplan' },
+    { modelId: 'doubao-seedream-4.5', name: 'Doubao Seedream 4.5', type: 'image', provider: 'wasu-tokenplan' },
+
+    // 华数 TokenPlan 视频模型
+    { modelId: 'doubao-seedance-2.0-fast', name: 'Seedance 2.0 Fast', type: 'video', provider: 'wasu-tokenplan' },
+    { modelId: 'wan2.7-t2v', name: 'Wan2.7 T2V', type: 'video', provider: 'wasu-tokenplan' },
+    { modelId: 'wan2.7-i2v', name: 'Wan2.7 I2V', type: 'video', provider: 'wasu-tokenplan' },
+    { modelId: 'wan2.7-r2v', name: 'Wan2.7 R2V', type: 'video', provider: 'wasu-tokenplan' },
+    { modelId: 'wan2.7-videoedit', name: 'Wan2.7 VideoEdit', type: 'video', provider: 'wasu-tokenplan' },
+
+    // 华数 TokenPlan 音频模型
+    { modelId: 'qwen3-tts-instruct-flash', name: 'Qwen3 TTS Instruct Flash', type: 'audio', provider: 'wasu-tokenplan' },
 ]
 
 const PRESET_COMING_SOON_MODEL_KEYS = new Set<string>([])
@@ -201,6 +220,7 @@ export const PRESET_PROVIDERS: Omit<Provider, 'apiKey' | 'hasApiKey'>[] = [
     { id: 'ark', name: 'Volcengine Ark' },
     { id: 'google', name: 'Google AI Studio' },
     { id: 'bailian', name: 'Alibaba Bailian' },
+    { id: 'wasu-tokenplan', name: 'Wasu TokenPlan', baseUrl: 'https://token.wasu.cn/v1' },
     { id: 'openrouter', name: 'OpenRouter', baseUrl: 'https://openrouter.ai/api/v1' },
     { id: 'minimax', name: 'MiniMax Hailuo', baseUrl: 'https://api.minimaxi.com/v1' },
     { id: 'vidu', name: 'Vidu' },
@@ -213,6 +233,7 @@ const ZH_PROVIDER_NAME_MAP: Record<string, string> = {
     vidu: '生数科技 Vidu',
     bailian: '阿里云百炼',
     siliconflow: '硅基流动',
+    'wasu-tokenplan': '华数TokenPlan',
 }
 
 function isZhLocale(locale?: string): boolean {
@@ -387,6 +408,15 @@ export const PROVIDER_TUTORIALS: ProviderTutorial[] = [
             {
                 text: 'siliconflow_step1',
                 url: 'https://cloud.siliconflow.cn/account/ak'
+            }
+        ]
+    },
+    {
+        providerId: 'wasu-tokenplan',
+        steps: [
+            {
+                text: 'wasu_tokenplan_step1',
+                url: 'https://tokenplan.wasu.cn'
             }
         ]
     },

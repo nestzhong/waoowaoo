@@ -39,8 +39,9 @@ import { withStreamChunkTimeout } from './stream-timeout'
 import { shouldUseOpenAIReasoningProviderOptions } from './reasoning-capability'
 import { completeBailianLlm } from '@/lib/providers/bailian'
 import { completeSiliconFlowLlm } from '@/lib/providers/siliconflow'
+import { completeWasuTokenplanLlm } from '@/lib/providers/wasu-tokenplan'
 
-const OFFICIAL_ONLY_PROVIDER_KEYS = new Set(['bailian', 'siliconflow'])
+const OFFICIAL_ONLY_PROVIDER_KEYS = new Set(['bailian', 'siliconflow', 'wasu-tokenplan'])
 
 type GoogleModelClient = {
   generateContentStream?: (params: unknown) => Promise<unknown>
@@ -332,6 +333,51 @@ export async function chatCompletionStream(
         messages,
         apiKey: providerConfig.apiKey,
         baseUrl: providerConfig.baseUrl,
+        temperature: options.temperature ?? 0.7,
+      })
+      const completionParts = getCompletionParts(completion)
+      let seq = 1
+      if (completionParts.reasoning) {
+        emitStreamChunk(callbacks, streamStep, {
+          kind: 'reasoning',
+          delta: completionParts.reasoning,
+          seq,
+          lane: 'reasoning',
+        })
+        seq += 1
+      }
+      if (completionParts.text) {
+        emitStreamChunk(callbacks, streamStep, {
+          kind: 'text',
+          delta: completionParts.text,
+          seq,
+          lane: 'main',
+        })
+      }
+      logLlmRawOutput({
+        userId,
+        projectId,
+        provider: providerKey,
+        modelId: resolvedModelId,
+        modelKey: selection.modelKey,
+        stream: true,
+        action: options.action,
+        text: completionParts.text,
+        reasoning: completionParts.reasoning,
+        usage: completionUsageSummary(completion),
+      })
+      recordCompletionUsage(resolvedModelId, completion)
+      emitStreamStage(callbacks, streamStep, 'completed', providerKey)
+      callbacks?.onComplete?.(completionParts.text, streamStep)
+      return completion
+    }
+
+    if (providerKey === 'wasu-tokenplan') {
+      emitStreamStage(callbacks, streamStep, 'streaming', providerKey)
+      const completion = await completeWasuTokenplanLlm({
+        modelId: resolvedModelId,
+        messages,
+        apiKey: providerConfig.apiKey,
         temperature: options.temperature ?? 0.7,
       })
       const completionParts = getCompletionParts(completion)

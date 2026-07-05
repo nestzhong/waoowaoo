@@ -8,6 +8,7 @@ type SupportedProvider =
   | 'openai'
   | 'bailian'
   | 'siliconflow'
+  | 'wasu-tokenplan'
   | 'openai-compatible'
   | 'gemini-compatible'
   | 'custom'
@@ -43,6 +44,7 @@ function normalizeProvider(payload: TestConnectionPayload): SupportedProvider {
     case 'gemini-compatible':
     case 'bailian':
     case 'siliconflow':
+    case 'wasu-tokenplan':
     case 'custom':
       return provider
     default:
@@ -197,6 +199,14 @@ export async function testLlmConnection(payload: TestConnectionPayload): Promise
     case 'siliconflow': {
       const tested = await testSiliconFlowProbe(apiKey)
       return { provider, message: 'siliconflow 连接成功', ...tested }
+    }
+    case 'wasu-tokenplan': {
+      const tested = await testOpenAICompatibleConnection({
+        apiKey,
+        baseURL: 'https://token.wasu.cn/v1',
+        model: requestedModel || undefined,
+      })
+      return { provider, message: 'wasu-tokenplan 连接成功', ...tested }
     }
     case 'openai-compatible': {
       const tested = await testOpenAICompatibleConnection({

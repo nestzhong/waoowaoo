@@ -20,6 +20,7 @@ export interface TestProviderResult {
 type PresetProviderType = 'ark' | 'google' | 'openrouter' | 'minimax' | 'fal' | 'vidu'
   | 'bailian'
   | 'siliconflow'
+  | 'wasu-tokenplan'
 type CompatibleProviderType = 'openai-compatible' | 'gemini-compatible'
 
 type TestProviderPayload = {
@@ -829,6 +830,64 @@ async function testBailianProvider(apiKey: string): Promise<TestProviderResult> 
 }
 
 // ---------------------------------------------------------------------------
+// Wasu TokenPlan (zero-inference probes)
+// ---------------------------------------------------------------------------
+
+async function testWasuTokenplanProvider(apiKey: string): Promise<TestProviderResult> {
+  const steps: TestStep[] = []
+  const headers = { Authorization: `Bearer ${apiKey}` }
+
+  try {
+    const modelResponse = await fetch('https://token.wasu.cn/v1/models', {
+      method: 'GET',
+      headers,
+      signal: AbortSignal.timeout(20_000),
+    })
+    if (!modelResponse.ok) {
+      const fail = classifyProbeFailure(modelResponse.status)
+      const detail = await modelResponse.text().catch(() => '')
+      steps.push({
+        name: 'models',
+        status: fail.status,
+        message: fail.message,
+        detail: detail.slice(0, 500),
+      })
+      steps.push({
+        name: 'credits',
+        status: 'skip',
+        message: 'Not supported by Wasu TokenPlan probe API',
+      })
+      return { success: false, steps }
+    }
+    const modelData = await modelResponse.json() as { data?: Array<{ id?: string }> }
+    const count = Array.isArray(modelData.data) ? modelData.data.length : 0
+    steps.push({
+      name: 'models',
+      status: 'pass',
+      message: `Found ${count} models`,
+    })
+    steps.push({
+      name: 'credits',
+      status: 'skip',
+      message: 'Not supported by Wasu TokenPlan probe API',
+    })
+    return { success: true, steps }
+  } catch (error) {
+    steps.push({
+      name: 'models',
+      status: 'fail',
+      message: toNetworkErrorMessage(error),
+    })
+    steps.push({
+      name: 'credits',
+      status: 'skip',
+      message: 'Not supported by Wasu TokenPlan probe API',
+    })
+    return { success: false, steps }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
@@ -871,6 +930,8 @@ export async function testProviderConnection(payload: TestProviderPayload): Prom
       return testBailianProvider(apiKey)
     case 'siliconflow':
       return testSiliconFlowProvider(apiKey)
+    case 'wasu-tokenplan':
+      return testWasuTokenplanProvider(apiKey)
     default:
       return {
         success: false,

@@ -9,6 +9,7 @@ import {
 } from './base'
 import { generateBailianAudio, generateBailianImage, generateBailianVideo } from '@/lib/providers/bailian'
 import { generateSiliconFlowAudio, generateSiliconFlowImage, generateSiliconFlowVideo } from '@/lib/providers/siliconflow'
+import { generateWasuTokenplanAudio, generateWasuTokenplanImage, generateWasuTokenplanVideo } from '@/lib/providers/wasu-tokenplan'
 
 export class BailianImageGenerator extends BaseImageGenerator {
   protected async doGenerate(params: ImageGenerateParams): Promise<GenerateResult> {
@@ -112,6 +113,64 @@ export class SiliconFlowAudioGenerator extends BaseAudioGenerator {
     const modelKey = typeof params.options?.modelKey === 'string' ? params.options.modelKey : ''
     const provider = typeof params.options?.provider === 'string' ? params.options.provider : 'siliconflow'
     return await generateSiliconFlowAudio({
+      userId: params.userId,
+      text: params.text,
+      voice: params.voice,
+      rate: params.rate,
+      options: {
+        ...params.options,
+        provider,
+        modelId,
+        modelKey,
+      },
+    })
+  }
+}
+
+export class WasuTokenplanImageGenerator extends BaseImageGenerator {
+  protected async doGenerate(params: ImageGenerateParams): Promise<GenerateResult> {
+    const modelId = typeof params.options?.modelId === 'string' ? params.options.modelId : ''
+    const modelKey = typeof params.options?.modelKey === 'string' ? params.options.modelKey : ''
+    const provider = typeof params.options?.provider === 'string' ? params.options.provider : 'wasu-tokenplan'
+    return await generateWasuTokenplanImage({
+      userId: params.userId,
+      prompt: params.prompt,
+      referenceImages: params.referenceImages,
+      options: {
+        ...params.options,
+        provider,
+        modelId,
+        modelKey,
+      },
+    })
+  }
+}
+
+export class WasuTokenplanVideoGenerator extends BaseVideoGenerator {
+  protected async doGenerate(params: VideoGenerateParams): Promise<GenerateResult> {
+    const modelId = typeof params.options?.modelId === 'string' ? params.options.modelId : ''
+    const modelKey = typeof params.options?.modelKey === 'string' ? params.options.modelKey : ''
+    const provider = typeof params.options?.provider === 'string' ? params.options.provider : 'wasu-tokenplan'
+    return await generateWasuTokenplanVideo({
+      userId: params.userId,
+      imageUrl: params.imageUrl,
+      prompt: params.prompt,
+      options: {
+        ...params.options,
+        provider,
+        modelId,
+        modelKey,
+      },
+    })
+  }
+}
+
+export class WasuTokenplanAudioGenerator extends BaseAudioGenerator {
+  protected async doGenerate(params: AudioGenerateParams): Promise<GenerateResult> {
+    const modelId = typeof params.options?.modelId === 'string' ? params.options.modelId : ''
+    const modelKey = typeof params.options?.modelKey === 'string' ? params.options.modelKey : ''
+    const provider = typeof params.options?.provider === 'string' ? params.options.provider : 'wasu-tokenplan'
+    return await generateWasuTokenplanAudio({
       userId: params.userId,
       text: params.text,
       voice: params.voice,

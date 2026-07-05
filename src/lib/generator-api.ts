@@ -20,8 +20,9 @@ import {
 } from './model-gateway'
 import { generateBailianAudio, generateBailianImage, generateBailianVideo } from './providers/bailian'
 import { generateSiliconFlowAudio, generateSiliconFlowImage, generateSiliconFlowVideo } from './providers/siliconflow'
+import { generateWasuTokenplanAudio, generateWasuTokenplanImage, generateWasuTokenplanVideo } from './providers/wasu-tokenplan'
 
-const OFFICIAL_ONLY_PROVIDER_KEYS = new Set(['bailian', 'siliconflow'])
+const OFFICIAL_ONLY_PROVIDER_KEYS = new Set(['bailian', 'siliconflow', 'wasu-tokenplan'])
 
 /**
  * 将 aspectRatio 映射为 OpenAI 兼容的 size
@@ -80,6 +81,19 @@ export async function generateImage(
     }
     if (providerKey === 'siliconflow') {
         return await generateSiliconFlowImage({
+            userId,
+            prompt,
+            referenceImages: options?.referenceImages,
+            options: {
+                ...(options || {}),
+                provider: selection.provider,
+                modelId: selection.modelId,
+                modelKey: selection.modelKey,
+            },
+        })
+    }
+    if (providerKey === 'wasu-tokenplan') {
+        return await generateWasuTokenplanImage({
             userId,
             prompt,
             referenceImages: options?.referenceImages,
@@ -220,6 +234,19 @@ export async function generateVideo(
             },
         })
     }
+    if (providerKey === 'wasu-tokenplan') {
+        return await generateWasuTokenplanVideo({
+            userId,
+            imageUrl,
+            prompt: options?.prompt,
+            options: {
+                ...(options || {}),
+                provider: selection.provider,
+                modelId: selection.modelId,
+                modelKey: selection.modelKey,
+            },
+        })
+    }
     const providerConfig = await getProviderConfig(userId, selection.provider)
     const defaultGatewayRoute = resolveModelGatewayRoute(selection.provider)
     const gatewayRoute = OFFICIAL_ONLY_PROVIDER_KEYS.has(providerKey)
@@ -311,6 +338,19 @@ export async function generateAudio(
     }
     if (providerKey === 'siliconflow') {
         return await generateSiliconFlowAudio({
+            userId,
+            text,
+            voice: options?.voice,
+            rate: options?.rate,
+            options: {
+                provider: selection.provider,
+                modelId: selection.modelId,
+                modelKey: selection.modelKey,
+            },
+        })
+    }
+    if (providerKey === 'wasu-tokenplan') {
+        return await generateWasuTokenplanAudio({
             userId,
             text,
             voice: options?.voice,

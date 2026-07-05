@@ -23,6 +23,7 @@ import {
 } from './runtime-shared'
 import { completeBailianLlm } from '@/lib/providers/bailian'
 import { completeSiliconFlowLlm } from '@/lib/providers/siliconflow'
+import { completeWasuTokenplanLlm } from '@/lib/providers/wasu-tokenplan'
 
 type GoogleVisionPart = { inlineData: { mimeType: string; data: string } } | { text: string }
 type ArkVisionContentItem = { type: 'input_image'; image_url: string } | { type: 'input_text'; text: string }
@@ -207,6 +208,47 @@ export async function chatCompletionWithVision(
           apiKey: providerConfig.apiKey,
           baseUrl: providerConfig.baseUrl,
           messages: [{ role: 'user', content: prompt }],
+          temperature,
+        })
+        recordCompletionUsage(resolvedModelId, completion)
+        llmLogger.info({
+          action: 'llm.vision.success',
+          message: 'llm vision call succeeded',
+          provider: providerKey,
+          durationMs: Date.now() - attemptStartedAt,
+          details: {
+            model: resolvedModelId,
+            attempt,
+            maxRetries,
+            imageCount: imageUrls.length,
+          },
+        })
+        return completion
+      }
+
+      if (providerKey === 'wasu-tokenplan') {
+        const { normalizeToBase64ForGeneration } = await import('@/lib/media/outbound-image')
+        const contentParts: Array<{ type: 'image_url'; image_url: { url: string } } | { type: 'text'; text: string }> = []
+        for (const url of imageUrls) {
+          let finalUrl = url
+          try {
+            if (!url.startsWith('http') && !url.startsWith('data:')) {
+              finalUrl = await normalizeToBase64ForGeneration(url)
+            } else if (url.startsWith('/')) {
+              finalUrl = await normalizeToBase64ForGeneration(url)
+            }
+          } catch (e) {
+            _ulogError('[LLM Vision] Wasu TokenPlan 图片转换失败:', e)
+          }
+          contentParts.push({ type: 'image_url', image_url: { url: finalUrl } })
+        }
+        if (textPrompt) {
+          contentParts.push({ type: 'text', text: textPrompt })
+        }
+        const completion = await completeWasuTokenplanLlm({
+          modelId: resolvedModelId,
+          apiKey: providerConfig.apiKey,
+          messages: [{ role: 'user', content: contentParts }],
           temperature,
         })
         recordCompletionUsage(resolvedModelId, completion)

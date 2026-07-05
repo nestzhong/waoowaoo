@@ -13,6 +13,9 @@ const fetchMock = vi.hoisted(() =>
     if (url.includes('api.siliconflow.cn/v1/user/info')) {
       return new Response(JSON.stringify({ data: { balance: '12.3000' } }), { status: 200 })
     }
+    if (url.includes('token.wasu.cn/v1/models')) {
+      return new Response(JSON.stringify({ data: [{ id: 'qwen3.6-plus' }, { id: 'qwen3.6-flash' }] }), { status: 200 })
+    }
     return new Response('not-found', { status: 404 })
   }),
 )
@@ -131,5 +134,26 @@ describe('provider test connection', () => {
       status: 'fail',
       message: 'Network error: socket hang up',
     })
+  })
+
+  it('passes wasu-tokenplan probe with models step and credits skip', async () => {
+    const result = await testProviderConnection({
+      apiType: 'wasu-tokenplan',
+      apiKey: 'ws-key',
+    })
+
+    expect(result.success).toBe(true)
+    expect(result.steps).toEqual([
+      {
+        name: 'models',
+        status: 'pass',
+        message: 'Found 2 models',
+      },
+      {
+        name: 'credits',
+        status: 'skip',
+        message: 'Not supported by Wasu TokenPlan probe API',
+      },
+    ])
   })
 })
