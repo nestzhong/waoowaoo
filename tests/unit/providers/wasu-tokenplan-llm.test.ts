@@ -53,7 +53,7 @@ describe('wasu-tokenplan llm provider', () => {
     expect(openAiCtorMock).toHaveBeenCalledWith({
       apiKey: 'ws-key',
       baseURL: 'https://token.wasu.cn/v1',
-      timeout: 30_000,
+      timeout: 300_000,
     })
     expect(createChatCompletionMock).toHaveBeenCalledWith({
       model: 'qwen3.6-plus',
@@ -63,17 +63,19 @@ describe('wasu-tokenplan llm provider', () => {
     expect(completion.choices[0]?.message?.content).toBe('ok')
   })
 
-  it('fails fast when model is not in official wasu-tokenplan catalog', async () => {
-    await expect(
-      completeWasuTokenplanLlm({
-        modelId: 'unknown-model',
-        messages: [{ role: 'user', content: 'hello' }],
-        apiKey: 'ws-key',
-      }),
-    ).rejects.toThrow(/MODEL_NOT_REGISTERED/)
+  it('allows any model id without catalog registration check', async () => {
+    await completeWasuTokenplanLlm({
+      modelId: 'doubao-seedance-1.5-pro',
+      messages: [{ role: 'user', content: 'hello' }],
+      apiKey: 'ws-key',
+    })
 
-    expect(openAiCtorMock).not.toHaveBeenCalled()
-    expect(createChatCompletionMock).not.toHaveBeenCalled()
+    expect(openAiCtorMock).toHaveBeenCalled()
+    expect(createChatCompletionMock).toHaveBeenCalledWith({
+      model: 'doubao-seedance-1.5-pro',
+      messages: [{ role: 'user', content: 'hello' }],
+      temperature: 0.7,
+    })
   })
 
   it('supports vision content with image_url parts', async () => {

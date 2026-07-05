@@ -1,11 +1,6 @@
-import {
-  assertOfficialModelRegistered,
-  type OfficialModelModality,
-} from '@/lib/providers/official/model-registry'
 import { getProviderConfig } from '@/lib/api-config'
 import type { GenerateResult } from '@/lib/generators/base'
 import { toFetchableUrl } from '@/lib/storage/utils'
-import { ensureWasuTokenplanCatalogRegistered } from './catalog'
 import { WASU_TOKENPLAN_BASE_URL } from './types'
 import type { WasuTokenplanGenerateRequestOptions } from './types'
 
@@ -14,15 +9,6 @@ export interface WasuTokenplanVideoGenerateParams {
   imageUrl?: string
   prompt?: string
   options: WasuTokenplanGenerateRequestOptions
-}
-
-function assertRegistered(modelId: string): void {
-  ensureWasuTokenplanCatalogRegistered()
-  assertOfficialModelRegistered({
-    provider: 'wasu-tokenplan',
-    modality: 'video' satisfies OfficialModelModality,
-    modelId,
-  })
 }
 
 function readTrimmedString(value: unknown): string {
@@ -288,7 +274,6 @@ async function pollVideoTask(
 export async function generateWasuTokenplanVideo(
   params: WasuTokenplanVideoGenerateParams,
 ): Promise<GenerateResult> {
-  assertRegistered(params.options.modelId)
   assertNoUnsupportedOptions(params.options)
 
   const { apiKey } = await getProviderConfig(params.userId, params.options.provider)

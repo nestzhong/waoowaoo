@@ -1,10 +1,5 @@
-import {
-  assertOfficialModelRegistered,
-  type OfficialModelModality,
-} from '@/lib/providers/official/model-registry'
 import { getProviderConfig } from '@/lib/api-config'
 import type { GenerateResult } from '@/lib/generators/base'
-import { ensureWasuTokenplanCatalogRegistered } from './catalog'
 import { WASU_TOKENPLAN_BASE_URL } from './types'
 import type { WasuTokenplanGenerateRequestOptions } from './types'
 
@@ -16,15 +11,6 @@ export interface WasuTokenplanAudioGenerateParams {
   options: WasuTokenplanGenerateRequestOptions
 }
 
-function assertRegistered(modelId: string): void {
-  ensureWasuTokenplanCatalogRegistered()
-  assertOfficialModelRegistered({
-    provider: 'wasu-tokenplan',
-    modality: 'audio' satisfies OfficialModelModality,
-    modelId,
-  })
-}
-
 function readTrimmedString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
 }
@@ -32,8 +18,6 @@ function readTrimmedString(value: unknown): string {
 export async function generateWasuTokenplanAudio(
   params: WasuTokenplanAudioGenerateParams,
 ): Promise<GenerateResult> {
-  assertRegistered(params.options.modelId)
-
   const voiceId = readTrimmedString(params.voice)
   const text = readTrimmedString(params.text)
   const modelId = readTrimmedString(params.options.modelId)

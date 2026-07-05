@@ -1,10 +1,5 @@
-import {
-  assertOfficialModelRegistered,
-  type OfficialModelModality,
-} from '@/lib/providers/official/model-registry'
 import { getProviderConfig } from '@/lib/api-config'
 import type { GenerateResult } from '@/lib/generators/base'
-import { ensureWasuTokenplanCatalogRegistered } from './catalog'
 import { WASU_TOKENPLAN_BASE_URL } from './types'
 import type { WasuTokenplanGenerateRequestOptions } from './types'
 
@@ -13,15 +8,6 @@ export interface WasuTokenplanImageGenerateParams {
   prompt: string
   referenceImages?: string[]
   options: WasuTokenplanGenerateRequestOptions
-}
-
-function assertRegistered(modelId: string): void {
-  ensureWasuTokenplanCatalogRegistered()
-  assertOfficialModelRegistered({
-    provider: 'wasu-tokenplan',
-    modality: 'image' satisfies OfficialModelModality,
-    modelId,
-  })
 }
 
 function readTrimmedString(value: unknown): string {
@@ -50,8 +36,6 @@ async function parseImageResponse(response: Response): Promise<WasuTokenplanImag
 export async function generateWasuTokenplanImage(
   params: WasuTokenplanImageGenerateParams,
 ): Promise<GenerateResult> {
-  assertRegistered(params.options.modelId)
-
   const modelId = readTrimmedString(params.options.modelId)
   if (!modelId) {
     throw new Error('WASU_TOKENPLAN_IMAGE_MODEL_ID_REQUIRED')
