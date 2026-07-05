@@ -61,6 +61,7 @@ function assertNoUnsupportedOptions(options: WasuTokenplanGenerateRequestOptions
     'prompt',
     'resolution',
     'ratio',
+    'aspectRatio',
     'watermark',
     'promptExtend',
     'duration',
@@ -83,7 +84,7 @@ function buildSubmitRequestBody(params: WasuTokenplanVideoGenerateParams): Recor
 
   const prompt = readTrimmedString(params.prompt) || readTrimmedString(params.options.prompt)
   const resolution = readTrimmedString(params.options.resolution)
-  const ratio = readTrimmedString(params.options.ratio as string)
+  const ratio = readTrimmedString(params.options.ratio as string) || readTrimmedString(params.options.aspectRatio as string)
   const watermark = readOptionalBoolean(params.options.watermark)
   const promptExtend = readOptionalBoolean(params.options.promptExtend)
   const duration = readOptionalPositiveInteger(params.options.duration, 'duration')
