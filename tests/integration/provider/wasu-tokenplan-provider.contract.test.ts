@@ -179,6 +179,95 @@ describe('provider contract - wasu-tokenplan', () => {
       expect(result.requestId).toBe('task-123')
     })
 
+    it('extracts video url from data wrapper with result_url', async () => {
+      let pollCount = 0
+      const fetchMock = vi.fn(async (url: string) => {
+        if (url.includes('/video/generations') && !url.includes('/video/generations/')) {
+          return new Response(JSON.stringify({ task_id: 'task-nested-1' }), { status: 200 })
+        }
+        pollCount++
+        if (pollCount >= 2) {
+          return new Response(JSON.stringify({
+            data: {
+              status: 'completed',
+              result_url: 'https://example.com/result-video.mp4',
+            },
+          }), { status: 200 })
+        }
+        return new Response(JSON.stringify({ data: { status: 'processing' } }), { status: 200 })
+      })
+      vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch)
+
+      const result = await generateWasuTokenplanVideo({
+        userId: 'user-1',
+        prompt: 'a flying bird',
+        options: {
+          provider: 'wasu-tokenplan',
+          modelId: 'wan2.7-t2v',
+          modelKey: 'wasu-tokenplan::wan2.7-t2v',
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.videoUrl).toBe('https://example.com/result-video.mp4')
+    })
+
+    it('extracts video url from response without data wrapper', async () => {
+      const fetchMock = vi.fn(async (url: string) => {
+        if (url.includes('/video/generations') && !url.includes('/video/generations/')) {
+          return new Response(JSON.stringify({ task_id: 'task-nested-2' }), { status: 200 })
+        }
+        return new Response(JSON.stringify({
+          status: 'completed',
+          result_url: 'https://example.com/direct-result.mp4',
+        }), { status: 200 })
+      })
+      vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch)
+
+      const result = await generateWasuTokenplanVideo({
+        userId: 'user-1',
+        prompt: 'a swimming fish',
+        options: {
+          provider: 'wasu-tokenplan',
+          modelId: 'wan2.7-t2v',
+          modelKey: 'wasu-tokenplan::wan2.7-t2v',
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.videoUrl).toBe('https://example.com/direct-result.mp4')
+    })
+
+    it('submits doubao-seedance-1.5-pro with seedance metadata', async () => {
+      const fetchMock = vi.fn(async (url: string) => {
+        if (url.includes('/video/generations') && !url.includes('/video/generations/')) {
+          return new Response(JSON.stringify({ task_id: 'task-seedance15' }), { status: 200 })
+        }
+        return new Response(JSON.stringify({
+          status: 'completed',
+          output: { video_url: 'https://example.com/seedance15.mp4' },
+        }), { status: 200 })
+      })
+      vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch)
+
+      const result = await generateWasuTokenplanVideo({
+        userId: 'user-1',
+        imageUrl: 'https://example.com/frame.png',
+        prompt: 'animate gently',
+        options: {
+          provider: 'wasu-tokenplan',
+          modelId: 'doubao-seedance-1.5-pro',
+          modelKey: 'wasu-tokenplan::doubao-seedance-1.5-pro',
+        },
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.videoUrl).toBe('https://example.com/seedance15.mp4')
+      const submitCall = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+      const body = JSON.parse(String(submitCall[1].body))
+      expect(body.model).toBe('doubao-seedance-1.5-pro')
+    })
+
     it('submits doubao-seedance-2.0-fast with first/last frame content', async () => {
       const fetchMock = vi.fn(async (url: string) => {
         if (url.includes('/video/generations') && !url.includes('/video/generations/')) {

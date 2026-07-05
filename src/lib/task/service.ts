@@ -431,11 +431,17 @@ export async function touchTaskHeartbeat(taskId: string) {
 }
 
 export async function tryUpdateTaskProgress(taskId: string, progress: number, payload?: Record<string, unknown> | null) {
+  const existingTask = await taskModel.findUnique({
+    where: { id: taskId },
+    select: { payload: true },
+  })
+  const existingPayload = (existingTask?.payload as Record<string, unknown> | null) || {}
+  const mergedPayload = payload ? { ...existingPayload, ...payload } : existingPayload
   const result = await taskModel.updateMany({
     where: activeTaskWhere(taskId),
     data: {
       progress,
-      ...(payload ? { payload: toNullableJson(payload) } : {}),
+      ...(payload ? { payload: toNullableJson(mergedPayload) } : {}),
     },
   })
   return result.count > 0

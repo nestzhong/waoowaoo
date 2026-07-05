@@ -27,7 +27,7 @@ function readOptionalPositiveInteger(value: unknown, fieldName: string): number 
   return value
 }
 
-const DOUBAO_SEEDANCE_MODELS = new Set(['doubao-seedance-2.0-fast'])
+const DOUBAO_SEEDANCE_MODELS = new Set(['doubao-seedance-2.0-fast', 'doubao-seedance-1.5-pro'])
 const WAN_TEXT_TO_VIDEO_MODELS = new Set(['wan2.7-t2v'])
 const WAN_IMAGE_TO_VIDEO_MODELS = new Set(['wan2.7-i2v'])
 const WAN_REFERENCE_MODELS = new Set(['wan2.7-r2v'])
@@ -44,7 +44,16 @@ interface WasuTokenplanVideoTaskStatusResponse {
   task_id?: string
   id?: string
   status?: string
+  result_url?: string
   output?: {
+    video_url?: string
+    url?: string
+  }
+  data?: {
+    status?: string
+    content?: {
+      video_url?: string
+    }
     video_url?: string
     url?: string
   }
@@ -222,18 +231,20 @@ async function parseTaskStatusResponse(response: Response): Promise<WasuTokenpla
   const raw = await response.text()
   if (!raw) return {}
   try {
-    const parsed = JSON.parse(raw) as unknown
+    const parsed = JSON.parse(raw) as Record<string, unknown>
     if (!parsed || typeof parsed !== 'object') {
       throw new Error('WASU_TOKENPLAN_VIDEO_STATUS_RESPONSE_INVALID')
     }
-    return parsed as WasuTokenplanVideoTaskStatusResponse
+    const data = parsed.data as Record<string, unknown> | undefined
+    const taskData = (data && typeof data === 'object' ? data : parsed) as WasuTokenplanVideoTaskStatusResponse
+    return taskData
   } catch {
     throw new Error('WASU_TOKENPLAN_VIDEO_STATUS_RESPONSE_INVALID_JSON')
   }
 }
 
 const POLL_INTERVAL_MS = 5_000
-const POLL_TIMEOUT_MS = 10 * 60 * 1000
+const POLL_TIMEOUT_MS = 15 * 60 * 1000
 
 async function pollVideoTask(
   taskId: string,
@@ -259,7 +270,8 @@ async function pollVideoTask(
       throw new Error(`WASU_TOKENPLAN_VIDEO_POLL_FAILED: ${errorMessage}`)
     }
 
-    const status = statusData.status?.toLowerCase()
+    const rawStatus = statusData.status || statusData.data?.status
+    const status = rawStatus?.toLowerCase()
     if (status === 'completed' || status === 'succeeded' || status === 'success') {
       return statusData
     }
@@ -302,8 +314,14 @@ export async function generateWasuTokenplanVideo(
     throw new Error('WASU_TOKENPLAN_VIDEO_TASK_ID_MISSING')
   }
 
+  console.log(`[wasu-tokenplan-video] External task submitted: ${taskId}`, JSON.stringify({ model: params.options.modelId, prompt: params.prompt?.slice(0, 50) }))
+
   const statusData = await pollVideoTask(taskId, apiKey)
-  const videoUrl = statusData.output?.video_url
+  const videoUrl = statusData.result_url
+    || statusData.data?.content?.video_url
+    || statusData.data?.video_url
+    || statusData.data?.url
+    || statusData.output?.video_url
     || statusData.output?.url
     || statusData.video_url
     || statusData.url
