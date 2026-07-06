@@ -7,6 +7,7 @@ import { QueryProvider } from "@/components/providers/QueryProvider"
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider
+      basePath="/waoowaoo/api/auth"
       refetchOnWindowFocus={false}
       refetchInterval={0}
     >
