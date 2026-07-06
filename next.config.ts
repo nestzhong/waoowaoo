@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
     'http://192.168.31.218:3000',
     'http://192.168.31.*:3000',
   ],
+  // 子路径部署，用于 nginx 反向代理
+  basePath: '/waoowaoo',
 };
 
 export default withNextIntl(nextConfig);
