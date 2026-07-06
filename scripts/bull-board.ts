@@ -7,7 +7,9 @@ import { imageQueue, textQueue, videoQueue, voiceQueue } from '@/lib/task/queues
 
 const host = process.env.BULL_BOARD_HOST || '127.0.0.1'
 const port = Number.parseInt(process.env.BULL_BOARD_PORT || '3010', 10) || 3010
-const basePath = process.env.BULL_BOARD_BASE_PATH || '/admin/queues'
+const nextBasePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+const defaultBullBoardBasePath = nextBasePath ? `${nextBasePath}/admin/queues` : '/admin/queues'
+const basePath = process.env.BULL_BOARD_BASE_PATH || defaultBullBoardBasePath
 const authUser = process.env.BULL_BOARD_USER
 const authPassword = process.env.BULL_BOARD_PASSWORD
 const logger = createScopedLogger({

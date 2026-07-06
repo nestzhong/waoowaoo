@@ -82,10 +82,12 @@ services:
       MINIO_ACCESS_KEY: "minioadmin"
       MINIO_SECRET_KEY: "minioadmin"
       MINIO_FORCE_PATH_STYLE: "true"
-      # 外部访问地址（浏览器实际访问）
+      # 外部访问地址（浏览器实际访问，子路径部署时需包含路径前缀）
       NEXTAUTH_URL: "http://localhost:13000"
-      # 容器内自调用地址（服务端 fetch 自己的 API / 文件）
+      # 容器内自调用地址（服务端 fetch 自己的 API / 文件，需包含 basePath）
       INTERNAL_APP_URL: "http://127.0.0.1:3000"
+      # 子路径部署前缀（为空时部署在根路径，如 "/waoowaoo"）
+      NEXT_PUBLIC_BASE_PATH: ""
       NEXTAUTH_SECRET: "waoowaoo-default-secret-2026"
       # 内部密钥
       CRON_SECRET: "waoowaoo-docker-cron-secret"
