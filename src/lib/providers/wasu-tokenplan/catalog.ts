@@ -5,6 +5,12 @@ const WASU_TOKENPLAN_CATALOG: Readonly<Record<OfficialModelModality, readonly st
   llm: [
     'qwen3.6-plus',
     'qwen3.6-flash',
+    'doubao-seed-2.0-pro',
+    'doubao-seed-2.0-lite',
+    'doubao-seed-2.0-mini',
+    'deepseek-v4-flash',
+    'deepseek-v4-pro',
+    'qwen3.7-max',
   ],
   image: [
     'qwen-image-2.0',
@@ -13,10 +19,7 @@ const WASU_TOKENPLAN_CATALOG: Readonly<Record<OfficialModelModality, readonly st
   ],
   video: [
     'doubao-seedance-2.0-fast',
-    'wan2.7-t2v',
-    'wan2.7-i2v',
-    'wan2.7-r2v',
-    'wan2.7-videoedit',
+    'doubao-seedance-1.5-pro',
   ],
   audio: [
     'qwen3-tts-instruct-flash',

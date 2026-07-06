@@ -188,6 +188,12 @@ export const PRESET_MODELS: PresetModel[] = [
     // 华数 TokenPlan 文本模型
     { modelId: 'qwen3.6-plus', name: 'Qwen 3.6 Plus', type: 'llm', provider: 'wasu-tokenplan' },
     { modelId: 'qwen3.6-flash', name: 'Qwen 3.6 Flash', type: 'llm', provider: 'wasu-tokenplan' },
+    { modelId: 'doubao-seed-2.0-pro', name: 'Doubao Seed 2.0 Pro', type: 'llm', provider: 'wasu-tokenplan' },
+    { modelId: 'doubao-seed-2.0-lite', name: 'Doubao Seed 2.0 Lite', type: 'llm', provider: 'wasu-tokenplan' },
+    { modelId: 'doubao-seed-2.0-mini', name: 'Doubao Seed 2.0 Mini', type: 'llm', provider: 'wasu-tokenplan' },
+    { modelId: 'deepseek-v4-flash', name: 'DeepSeek V4 Flash', type: 'llm', provider: 'wasu-tokenplan' },
+    { modelId: 'deepseek-v4-pro', name: 'DeepSeek V4 Pro', type: 'llm', provider: 'wasu-tokenplan' },
+    { modelId: 'qwen3.7-max', name: 'Qwen 3.7 Max', type: 'llm', provider: 'wasu-tokenplan' },
 
     // 华数 TokenPlan 图片模型
     { modelId: 'qwen-image-2.0', name: 'Qwen Image 2.0', type: 'image', provider: 'wasu-tokenplan' },
@@ -196,10 +202,7 @@ export const PRESET_MODELS: PresetModel[] = [
 
     // 华数 TokenPlan 视频模型
     { modelId: 'doubao-seedance-2.0-fast', name: 'Seedance 2.0 Fast', type: 'video', provider: 'wasu-tokenplan' },
-    { modelId: 'wan2.7-t2v', name: 'Wan2.7 T2V', type: 'video', provider: 'wasu-tokenplan' },
-    { modelId: 'wan2.7-i2v', name: 'Wan2.7 I2V', type: 'video', provider: 'wasu-tokenplan' },
-    { modelId: 'wan2.7-r2v', name: 'Wan2.7 R2V', type: 'video', provider: 'wasu-tokenplan' },
-    { modelId: 'wan2.7-videoedit', name: 'Wan2.7 VideoEdit', type: 'video', provider: 'wasu-tokenplan' },
+    { modelId: 'doubao-seedance-1.5-pro', name: 'Seedance 1.5 Pro', type: 'video', provider: 'wasu-tokenplan' },
 
     // 华数 TokenPlan 音频模型
     { modelId: 'qwen3-tts-instruct-flash', name: 'Qwen3 TTS Instruct Flash', type: 'audio', provider: 'wasu-tokenplan' },
@@ -217,10 +220,10 @@ export function isPresetComingSoonModelKey(modelKey: string): boolean {
 
 // 预设提供商（API Key 唯一归属于 provider id）
 export const PRESET_PROVIDERS: Omit<Provider, 'apiKey' | 'hasApiKey'>[] = [
+    { id: 'wasu-tokenplan', name: 'Wasu TokenPlan', baseUrl: 'https://token.wasu.cn/v1' },
     { id: 'ark', name: 'Volcengine Ark' },
     { id: 'google', name: 'Google AI Studio' },
     { id: 'bailian', name: 'Alibaba Bailian' },
-    { id: 'wasu-tokenplan', name: 'Wasu TokenPlan', baseUrl: 'https://token.wasu.cn/v1' },
     { id: 'openrouter', name: 'OpenRouter', baseUrl: 'https://openrouter.ai/api/v1' },
     { id: 'minimax', name: 'MiniMax Hailuo', baseUrl: 'https://api.minimaxi.com/v1' },
     { id: 'vidu', name: 'Vidu' },

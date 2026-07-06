@@ -144,7 +144,7 @@ describe('provider contract - wasu-tokenplan', () => {
   })
 
   describe('video generation', () => {
-    it('submits text-to-video request for wan2.7-t2v and polls for result', async () => {
+    it('submits image-to-video request for doubao-seedance-2.0-fast and polls for result', async () => {
       let pollCount = 0
       const fetchMock = vi.fn(async (url: string) => {
         if (url.includes('/video/generations') && !url.includes('/video/generations/')) {
@@ -166,11 +166,12 @@ describe('provider contract - wasu-tokenplan', () => {
 
       const result = await generateWasuTokenplanVideo({
         userId: 'user-1',
+        imageUrl: 'https://example.com/frame.png',
         prompt: 'a flying bird',
         options: {
           provider: 'wasu-tokenplan',
-          modelId: 'wan2.7-t2v',
-          modelKey: 'wasu-tokenplan::wan2.7-t2v',
+          modelId: 'doubao-seedance-2.0-fast',
+          modelKey: 'wasu-tokenplan::doubao-seedance-2.0-fast',
         },
       })
 
@@ -200,11 +201,12 @@ describe('provider contract - wasu-tokenplan', () => {
 
       const result = await generateWasuTokenplanVideo({
         userId: 'user-1',
+        imageUrl: 'https://example.com/frame.png',
         prompt: 'a flying bird',
         options: {
           provider: 'wasu-tokenplan',
-          modelId: 'wan2.7-t2v',
-          modelKey: 'wasu-tokenplan::wan2.7-t2v',
+          modelId: 'doubao-seedance-2.0-fast',
+          modelKey: 'wasu-tokenplan::doubao-seedance-2.0-fast',
         },
       })
 
@@ -226,11 +228,12 @@ describe('provider contract - wasu-tokenplan', () => {
 
       const result = await generateWasuTokenplanVideo({
         userId: 'user-1',
+        imageUrl: 'https://example.com/frame.png',
         prompt: 'a swimming fish',
         options: {
           provider: 'wasu-tokenplan',
-          modelId: 'wan2.7-t2v',
-          modelKey: 'wasu-tokenplan::wan2.7-t2v',
+          modelId: 'doubao-seedance-1.5-pro',
+          modelKey: 'wasu-tokenplan::doubao-seedance-1.5-pro',
         },
       })
 
