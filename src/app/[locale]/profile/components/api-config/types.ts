@@ -419,7 +419,7 @@ export const PROVIDER_TUTORIALS: ProviderTutorial[] = [
         steps: [
             {
                 text: 'wasu_tokenplan_step1',
-                url: 'https://tokenplan.wasu.cn'
+                url: 'https://tokenplan.wasu.cn/web/index.html'
             }
         ]
     },
