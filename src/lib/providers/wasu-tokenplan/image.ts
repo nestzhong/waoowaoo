@@ -48,7 +48,7 @@ export async function generateWasuTokenplanImage(
 
   const { apiKey } = await getProviderConfig(params.userId, params.options.provider)
 
-  const isDoubaoSeedream = modelId === 'doubao-seedream-4.5'
+  const isDoubaoSeedream = modelId === 'doubao-seedream-4.5' || modelId === 'doubao-seedream-5.0-lite'
   const isQwenImagePro = modelId === 'qwen-image-2.0-pro'
   const hasReferenceImages = !!params.referenceImages && params.referenceImages.length > 0
 

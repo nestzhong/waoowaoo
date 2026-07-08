@@ -199,6 +199,7 @@ export const PRESET_MODELS: PresetModel[] = [
     { modelId: 'qwen-image-2.0', name: 'Qwen Image 2.0', type: 'image', provider: 'wasu-tokenplan' },
     { modelId: 'qwen-image-2.0-pro', name: 'Qwen Image 2.0 Pro', type: 'image', provider: 'wasu-tokenplan' },
     { modelId: 'doubao-seedream-4.5', name: 'Doubao Seedream 4.5', type: 'image', provider: 'wasu-tokenplan' },
+    { modelId: 'doubao-seedream-5.0-lite', name: 'Doubao Seedream 5.0 Lite', type: 'image', provider: 'wasu-tokenplan' },
 
     // 华数 TokenPlan 视频模型
     { modelId: 'doubao-seedance-2.0-fast', name: 'Seedance 2.0 Fast', type: 'video', provider: 'wasu-tokenplan' },

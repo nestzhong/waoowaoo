@@ -16,6 +16,7 @@ const WASU_TOKENPLAN_CATALOG: Readonly<Record<OfficialModelModality, readonly st
     'qwen-image-2.0',
     'qwen-image-2.0-pro',
     'doubao-seedream-4.5',
+    'doubao-seedream-5.0-lite',
   ],
   video: [
     'doubao-seedance-2.0-fast',
