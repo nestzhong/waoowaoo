@@ -1136,5 +1136,32 @@
         "supportGenerateAudio": false
       }
     }
+  },
+  {
+    "modelType": "image",
+    "provider": "wasu-tokenplan",
+    "modelId": "doubao-seedream-4.5",
+    "capabilities": {
+      "image": {
+        "resolutionOptions": [
+          "2K",
+          "4K"
+        ]
+      }
+    }
+  },
+  {
+    "modelType": "image",
+    "provider": "wasu-tokenplan",
+    "modelId": "doubao-seedream-5.0-lite",
+    "capabilities": {
+      "image": {
+        "resolutionOptions": [
+          "2K",
+          "3K",
+          "4K"
+        ]
+      }
+    }
   }
 ]

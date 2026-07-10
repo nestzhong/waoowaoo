@@ -19,7 +19,9 @@ const WASU_TOKENPLAN_CATALOG: Readonly<Record<OfficialModelModality, readonly st
     'doubao-seedream-5.0-lite',
   ],
   video: [
+    'doubao-seedance-2.0',
     'doubao-seedance-2.0-fast',
+    'doubao-seedance-2.0-mini',
     'doubao-seedance-1.5-pro',
   ],
   audio: [

@@ -27,7 +27,7 @@ function readOptionalPositiveInteger(value: unknown, fieldName: string): number 
   return value
 }
 
-const DOUBAO_SEEDANCE_MODELS = new Set(['doubao-seedance-2.0-fast', 'doubao-seedance-1.5-pro'])
+const DOUBAO_SEEDANCE_MODELS = new Set(['doubao-seedance-2.0', 'doubao-seedance-2.0-fast', 'doubao-seedance-2.0-mini', 'doubao-seedance-1.5-pro'])
 const WAN_TEXT_TO_VIDEO_MODELS = new Set(['wan2.7-t2v'])
 const WAN_IMAGE_TO_VIDEO_MODELS = new Set(['wan2.7-i2v'])
 const WAN_REFERENCE_MODELS = new Set(['wan2.7-r2v'])

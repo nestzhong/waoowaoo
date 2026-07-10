@@ -1,5 +1,6 @@
 import { getProviderConfig } from '@/lib/api-config'
 import type { GenerateResult } from '@/lib/generators/base'
+import { resolveSeedreamSize, identifySeedreamModelFamily, SEEDREAM_DEFAULT_SIZES } from '@/lib/generators/seedream-sizes'
 import { WASU_TOKENPLAN_BASE_URL } from './types'
 import type { WasuTokenplanGenerateRequestOptions } from './types'
 
@@ -48,9 +49,25 @@ export async function generateWasuTokenplanImage(
 
   const { apiKey } = await getProviderConfig(params.userId, params.options.provider)
 
-  const isDoubaoSeedream = modelId === 'doubao-seedream-4.5' || modelId === 'doubao-seedream-5.0-lite'
+  const seedreamFamily = identifySeedreamModelFamily(modelId)
+  const isDoubaoSeedream = seedreamFamily !== null
   const isQwenImagePro = modelId === 'qwen-image-2.0-pro'
   const hasReferenceImages = !!params.referenceImages && params.referenceImages.length > 0
+
+  const resolveSize = (): string => {
+    if (isDoubaoSeedream) {
+      const resolved = resolveSeedreamSize({
+        modelId,
+        directSize: readTrimmedString(params.options.size),
+        resolution: readTrimmedString(params.options.resolution),
+        aspectRatio: readTrimmedString(params.options.aspectRatio),
+      })
+      return resolved || SEEDREAM_DEFAULT_SIZES[seedreamFamily!]
+    }
+    return readTrimmedString(params.options.size) || '1024x1024'
+  }
+
+  const size = resolveSize()
 
   let requestBody: Record<string, unknown>
 
@@ -60,7 +77,7 @@ export async function generateWasuTokenplanImage(
       prompt,
       image: params.referenceImages,
       n: 1,
-      size: readTrimmedString(params.options.size) || '1024x1024',
+      size,
     }
   } else if (isQwenImagePro && hasReferenceImages) {
     requestBody = {
@@ -78,7 +95,7 @@ export async function generateWasuTokenplanImage(
       },
       parameters: {
         n: 1,
-        size: readTrimmedString(params.options.size) || '1024x1024',
+        size,
       },
     }
   } else {
@@ -86,7 +103,7 @@ export async function generateWasuTokenplanImage(
       model: modelId,
       prompt,
       n: 1,
-      size: readTrimmedString(params.options.size) || '1024x1024',
+      size,
     }
   }
 

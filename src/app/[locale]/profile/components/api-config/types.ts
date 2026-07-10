@@ -202,7 +202,9 @@ export const PRESET_MODELS: PresetModel[] = [
     { modelId: 'doubao-seedream-5.0-lite', name: 'Doubao Seedream 5.0 Lite', type: 'image', provider: 'wasu-tokenplan' },
 
     // 华数 TokenPlan 视频模型
+    { modelId: 'doubao-seedance-2.0', name: 'Seedance 2.0', type: 'video', provider: 'wasu-tokenplan' },
     { modelId: 'doubao-seedance-2.0-fast', name: 'Seedance 2.0 Fast', type: 'video', provider: 'wasu-tokenplan' },
+    { modelId: 'doubao-seedance-2.0-mini', name: 'Seedance 2.0 Mini', type: 'video', provider: 'wasu-tokenplan' },
     { modelId: 'doubao-seedance-1.5-pro', name: 'Seedance 1.5 Pro', type: 'video', provider: 'wasu-tokenplan' },
 
     // 华数 TokenPlan 音频模型

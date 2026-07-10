@@ -26,6 +26,7 @@ import {
 import { getProviderConfig } from '@/lib/api-config'
 import { arkImageGeneration, arkCreateVideoTask } from '@/lib/ark-api'
 import { normalizeToBase64ForGeneration } from '@/lib/media/outbound-image'
+import { resolveSeedreamSize, SEEDREAM_SIZE_MAPS, SEEDREAM_DEFAULT_SIZES, identifySeedreamModelFamily } from './seedream-sizes'
 
 interface ArkImageOptions {
     aspectRatio?: string
@@ -147,45 +148,6 @@ function isInteger(value: unknown): value is number {
 }
 
 // ============================================================
-// 图像尺寸映射表
-// ============================================================
-
-// 4K 分辨率映射表（Seedream 4.x，上限 4096x4096 ≈ 16.7M 像素）
-const SIZE_MAP_4K: Record<string, string> = {
-    '1:1': '4096x4096',
-    '16:9': '5456x3072',
-    '9:16': '3072x5456',
-    '4:3': '4728x3544',
-    '3:4': '3544x4728',
-    '3:2': '5016x3344',
-    '2:3': '3344x5016',
-    '21:9': '6256x2680',
-    '9:21': '2680x6256',
-}
-
-// 3K 分辨率映射表（Seedream 5.0，上限 ≈ 10,404,496 像素）
-const SIZE_MAP_3K: Record<string, string> = {
-    '1:1': '3072x3072',
-    '16:9': '4096x2304',
-    '9:16': '2304x4096',
-    '4:3': '3648x2736',
-    '3:4': '2736x3648',
-    '3:2': '3888x2592',
-    '2:3': '2592x3888',
-    '21:9': '4704x2016',
-    '9:21': '2016x4704',
-}
-
-/** Seedream 5.0 系列使用 3K 尺寸映射 */
-function isSeedream5Model(modelId: string): boolean {
-    return modelId.includes('seedream-5')
-}
-
-function getSizeMapForModel(modelId: string): Record<string, string> {
-    return isSeedream5Model(modelId) ? SIZE_MAP_3K : SIZE_MAP_4K
-}
-
-// ============================================================
 // ARK 图像生成器 (Seedream)
 // ============================================================
 
@@ -216,23 +178,32 @@ export class ArkImageGenerator extends BaseImageGenerator {
         }
 
         const resolution = (options as ArkImageOptions).resolution
-        if (resolution !== undefined && resolution !== '4K' && resolution !== '3K') {
-            throw new Error(`ARK_IMAGE_OPTION_VALUE_UNSUPPORTED: resolution=${resolution}`)
+        const seedreamFamily = identifySeedreamModelFamily(modelId)
+        if (resolution !== undefined && seedreamFamily) {
+            const supportedResolutions = Object.keys(SEEDREAM_SIZE_MAPS[seedreamFamily])
+            if (!supportedResolutions.includes(resolution)) {
+                throw new Error(`ARK_IMAGE_OPTION_VALUE_UNSUPPORTED: resolution=${resolution}`)
+            }
         }
 
-        // 决定最终 size：根据模型选择合适的尺寸映射表
-        const sizeMap = getSizeMapForModel(modelId)
+        // 决定最终 size：使用公共模块解析
         let size: string | undefined
         if (directSize) {
             size = directSize
+        } else if (seedreamFamily) {
+            size = resolveSeedreamSize({
+                modelId,
+                resolution,
+                aspectRatio,
+            })
+            if (!size) {
+                size = SEEDREAM_DEFAULT_SIZES[seedreamFamily]
+            }
         } else {
             if (!aspectRatio) {
                 throw new Error('ARK_IMAGE_OPTION_REQUIRED: aspectRatio or size must be provided')
             }
-            size = sizeMap[aspectRatio]
-            if (!size) {
-                throw new Error(`ARK_IMAGE_OPTION_VALUE_UNSUPPORTED: aspectRatio=${aspectRatio}`)
-            }
+            throw new Error(`ARK_IMAGE_OPTION_VALUE_UNSUPPORTED: aspectRatio=${aspectRatio}`)
         }
 
         _ulogInfo(`[ARK Image] 模型=${modelId}, aspectRatio=${aspectRatio || '(none)'}, size=${size || '(未传)'}`)

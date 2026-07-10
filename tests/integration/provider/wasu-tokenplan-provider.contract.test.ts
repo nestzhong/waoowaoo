@@ -141,6 +141,167 @@ describe('provider contract - wasu-tokenplan', () => {
         { text: 'make it blue' },
       ])
     })
+
+    it('submits text-to-image request for doubao-seedream-4.5 with default size', async () => {
+      const fetchMock = vi.fn(async () =>
+        new Response(JSON.stringify({ data: [{ url: 'https://example.com/image.png' }] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      )
+      vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch)
+
+      const result = await generateWasuTokenplanImage({
+        userId: 'user-1',
+        prompt: 'a white cat',
+        options: {
+          provider: 'wasu-tokenplan',
+          modelId: 'doubao-seedream-4.5',
+          modelKey: 'wasu-tokenplan::doubao-seedream-4.5',
+        },
+      })
+
+      expect(result.success).toBe(true)
+      const callArgs = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+      const body = JSON.parse(String(callArgs[1].body))
+      expect(body).toEqual({
+        model: 'doubao-seedream-4.5',
+        prompt: 'a white cat',
+        n: 1,
+        size: '2048x2048',
+      })
+    })
+
+    it('submits text-to-image request for doubao-seedream-4.5 with aspectRatio', async () => {
+      const fetchMock = vi.fn(async () =>
+        new Response(JSON.stringify({ data: [{ url: 'https://example.com/image.png' }] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      )
+      vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch)
+
+      await generateWasuTokenplanImage({
+        userId: 'user-1',
+        prompt: 'landscape scene',
+        options: {
+          provider: 'wasu-tokenplan',
+          modelId: 'doubao-seedream-4.5',
+          modelKey: 'wasu-tokenplan::doubao-seedream-4.5',
+          aspectRatio: '16:9',
+        },
+      })
+
+      const callArgs = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+      const body = JSON.parse(String(callArgs[1].body))
+      expect(body.size).toBe('2848x1600')
+    })
+
+    it('submits text-to-image request for doubao-seedream-4.5 with resolution 4K', async () => {
+      const fetchMock = vi.fn(async () =>
+        new Response(JSON.stringify({ data: [{ url: 'https://example.com/image.png' }] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      )
+      vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch)
+
+      await generateWasuTokenplanImage({
+        userId: 'user-1',
+        prompt: 'high quality landscape',
+        options: {
+          provider: 'wasu-tokenplan',
+          modelId: 'doubao-seedream-4.5',
+          modelKey: 'wasu-tokenplan::doubao-seedream-4.5',
+          resolution: '4K',
+          aspectRatio: '3:2',
+        },
+      })
+
+      const callArgs = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+      const body = JSON.parse(String(callArgs[1].body))
+      expect(body.size).toBe('4992x3328')
+    })
+
+    it('submits text-to-image request for doubao-seedream-5.0-lite with default size', async () => {
+      const fetchMock = vi.fn(async () =>
+        new Response(JSON.stringify({ data: [{ url: 'https://example.com/image.png' }] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      )
+      vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch)
+
+      await generateWasuTokenplanImage({
+        userId: 'user-1',
+        prompt: 'a cute dog',
+        options: {
+          provider: 'wasu-tokenplan',
+          modelId: 'doubao-seedream-5.0-lite',
+          modelKey: 'wasu-tokenplan::doubao-seedream-5.0-lite',
+        },
+      })
+
+      const callArgs = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+      const body = JSON.parse(String(callArgs[1].body))
+      expect(body.size).toBe('2048x2048')
+    })
+
+    it('submits text-to-image request for doubao-seedream-5.0-lite with resolution 3K', async () => {
+      const fetchMock = vi.fn(async () =>
+        new Response(JSON.stringify({ data: [{ url: 'https://example.com/image.png' }] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      )
+      vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch)
+
+      await generateWasuTokenplanImage({
+        userId: 'user-1',
+        prompt: 'portrait scene',
+        options: {
+          provider: 'wasu-tokenplan',
+          modelId: 'doubao-seedream-5.0-lite',
+          modelKey: 'wasu-tokenplan::doubao-seedream-5.0-lite',
+          resolution: '3K',
+          aspectRatio: '9:16',
+        },
+      })
+
+      const callArgs = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+      const body = JSON.parse(String(callArgs[1].body))
+      expect(body.size).toBe('2304x4096')
+    })
+
+    it('submits image-to-image request for doubao-seedream-4.5 with reference images', async () => {
+      const fetchMock = vi.fn(async () =>
+        new Response(JSON.stringify({ data: [{ url: 'https://example.com/image.png' }] }), {
+          status: 200,
+        }),
+      )
+      vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch)
+
+      await generateWasuTokenplanImage({
+        userId: 'user-1',
+        prompt: 'change clothing',
+        referenceImages: ['https://example.com/ref1.png', 'https://example.com/ref2.png'],
+        options: {
+          provider: 'wasu-tokenplan',
+          modelId: 'doubao-seedream-4.5',
+          modelKey: 'wasu-tokenplan::doubao-seedream-4.5',
+        },
+      })
+
+      const callArgs = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+      const body = JSON.parse(String(callArgs[1].body))
+      expect(body).toEqual({
+        model: 'doubao-seedream-4.5',
+        prompt: 'change clothing',
+        image: ['https://example.com/ref1.png', 'https://example.com/ref2.png'],
+        n: 1,
+        size: '2048x2048',
+      })
+    })
   })
 
   describe('video generation', () => {
